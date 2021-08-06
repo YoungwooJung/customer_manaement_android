@@ -25,21 +25,37 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.get_customer_btn).setOnClickListener {
             val retrofit = Retrofit.Builder()
-                .baseUrl("http://192.168.219.102:8080")
+                .baseUrl("http://192.168.219.161:8080")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
             val restApi = retrofit.create(RestApi::class.java)
-            restApi.requestCustomerDetail("1").enqueue(object : Callback<Customer> {
-                override fun onResponse(call: Call<Customer>, response: Response<Customer>) {
-                    val res = response.body() as Customer
-                    val result = res.id.toString() + res.name
-                    resultTextView.text = result
+//            restApi.requestCustomerDetail("1").enqueue(object : Callback<Customer> {
+//                override fun onResponse(call: Call<Customer>, response: Response<Customer>) {
+//                    val res = response.body() as Customer
+//                    val result = res.id.toString() + res.name
+//                    resultTextView.text = result
+//                }
+//
+//                override fun onFailure(call: Call<Customer>, t: Throwable) {
+//                    Log.e(TAG, "$t")
+//                }
+//
+//            })
+            restApi.searchCustomers("in").enqueue(object : Callback<List<Customer>> {
+                override fun onResponse(
+                    call: Call<List<Customer>>,
+                    response: Response<List<Customer>>
+                ) {
+                    if (response.isSuccessful) {
+                        val customers = response.body() as List<Customer>
+                        Log.d(TAG, customers.toString())
+                        resultTextView.text = customers.toString()
+                    }
                 }
 
-                override fun onFailure(call: Call<Customer>, t: Throwable) {
+                override fun onFailure(call: Call<List<Customer>>, t: Throwable) {
                     Log.e(TAG, "$t")
                 }
-
             })
         }
     }
